@@ -1,39 +1,53 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8"> 
-  <script type="text/javascript" src="sha512.js"></script>
-  <script src="http://code.jquery.com/jquery-3.2.0.min.js"></script>
-  <script type="text/javascript" >
-    function onPass(event) {
-      event = event || window.event;
-      if (event.keyCode != 13) {
-        return;
-      }
+<meta charset="UTF-8"> 
+<script type="text/javascript" src="sha512.js"></script>
+<script src="http://code.jquery.com/jquery-3.2.0.min.js"></script>
 
-      var pass = $("#pass").val();
-      var url = window.location.href + hex_sha512(pass) + "/index.html";
-      $("#status").text("...");
-
-      $.ajax({
-        type: 'HEAD',
-        url: url,
-        success: function() {
-          window.location = url;
-        },
-        error: function() {
-          $("#status").text("ERROR!");
-        }
-      });
+<script type="text/javascript" >
+  function onPass(event) {
+    event = event || window.event;
+    if (event.keyCode != 13) {
+      return;
     }
-  </script>
+
+    var pass = $("#pass").val();
+    var url = window.location.href + hex_sha512(pass) + "/index.html";
+    $("#status").text("...");
+
+    $.ajax({
+      type: 'HEAD',
+      url: url,
+      success: function() {
+        var iframe = $("#iframe");
+        iframe.css("display", "inherit");
+        iframe.attr("src", url);
+        $("#prompt").css("display", "none");
+      },
+      error: function() {
+        $("#status").text("ERROR!");
+      }
+    });
+  }
+</script>
+
+<style>
+  body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+  #content { position:absolute; left: 0; right: 0; bottom: 0; top: 0px; }
+  #iframe { display: none; }
+</style>
 </head>
 
 <body>
-  <p>
-  Enter password: <input type="password" onkeyup="onPass(event)" id="pass">
-  </p>
-  <p id="status"></p>
-
+  <div id="content">
+    <div id="prompt">
+      <p>
+      Enter password: <input type="password" onkeyup="onPass(event)" id="pass">
+      </p>
+      <p id="status"></p>
+    </div>
+    <iframe id="iframe" width="100%" height="100%" frameborder="0" />
+  </div>
 </body>
 </html>
